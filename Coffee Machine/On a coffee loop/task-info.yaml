@@ -1,0 +1,530 @@
+type: edu
+custom_name: stage5
+files:
+- name: src/machine/Main.kt
+  visible: true
+  text: |+
+    package machine
+
+    import machine.CoffeMachnine.Companion.coffeeMachineHas
+    import java.util.*
+
+    class CoffeMachnine {
+
+        companion object {
+
+            private var coffeMachine = mutableMapOf<String, Int?>()
+
+            operator fun set(s: String, value: Int) {
+                coffeMachine[s] = value
+
+            }
+
+            operator fun get(s: String): Int? {
+                return coffeMachine[s]
+            }
+
+            fun coffeeMachineHas() {
+
+                println(
+                    """
+            The coffee machine has:
+            ${coffeMachine["water"]} of water
+            ${coffeMachine["milk"]} of milk
+            ${coffeMachine["beans"]} of coffee beans
+            ${coffeMachine["availableCups"]} of disposable cups
+            ${coffeMachine["money"]} of money
+            """.trimIndent()
+                )
+            }
+
+
+        }
+    }
+
+    fun main() {
+
+
+        val espresso = Espresso()
+        val latte = Latte()
+        val cappuccino = Cappuccino()
+        val coffeMachine = CoffeMachnine
+
+        coffeMachine["water"] = 400
+        coffeMachine["milk"] = 540
+        coffeMachine["beans"] = 120
+        coffeMachine["money"] = 550
+        coffeMachine["availableCups"] = 9
+
+        coffeeMachineHas()
+
+        println("Write action (buy, fill, take): ")
+
+        val scanner = Scanner(System.`in`)
+
+        val input = scanner.next()
+        if (input == "buy") {
+            print("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:")
+            val inputCoffe = scanner.nextInt()
+            if (inputCoffe in 1..3) {
+
+                if (inputCoffe == 1) {
+                    coffeMachine["water"] = coffeMachine["water"]?.minus(espresso.water)!!
+                    coffeMachine["milk"] = coffeMachine["milk"]?.minus(0)!!
+                    coffeMachine["beans"] = coffeMachine["beans"]?.minus(espresso.beans)!!
+                    coffeMachine["money"] = coffeMachine["money"]?.plus(espresso.cost)!!
+                    coffeMachine["availableCups"] =  coffeMachine["availableCups"]?.minus(1)!!
+                    coffeeMachineHas()
+
+                    return
+                }
+                if (inputCoffe == 2) {
+                    coffeMachine["water"] = coffeMachine["water"]?.minus(latte.water)!!
+                    coffeMachine["milk"] = coffeMachine["milk"]?.minus(latte.milk)!!
+                    coffeMachine["beans"] = coffeMachine["beans"]?.minus(latte.beans)!!
+                    coffeMachine["money"] = coffeMachine["money"]?.plus(latte.cost)!!
+                    coffeMachine["availableCups"] =  coffeMachine["availableCups"]?.minus(1)!!
+                    coffeeMachineHas()
+
+                    return
+                }
+                if (inputCoffe == 3) {
+                    coffeMachine["water"] = coffeMachine["water"]?.minus(cappuccino.water)!!
+                    coffeMachine["milk"] = coffeMachine["milk"]?.minus(cappuccino.milk)!!
+                    coffeMachine["beans"] = coffeMachine["beans"]?.minus(cappuccino.beans)!!
+                    coffeMachine["money"] = coffeMachine["money"]?.plus(cappuccino.cost)!!
+                    coffeMachine["availableCups"] =  coffeMachine["availableCups"]?.minus(1)!!
+                    coffeeMachineHas()
+
+                    return
+                }
+            } else {
+                print("Wrong number of coffe")
+                return
+            }
+
+
+            return
+        }
+        if (input == "fill") {
+
+            println("Write how many ml of water do you want to add:")
+            val input1 = scanner.nextInt()
+            coffeMachine["water"] = coffeMachine["water"]?.plus(input1)!!
+
+            println("Write how many ml of milk do you want to add:")
+            val input2 = scanner.nextInt()
+            coffeMachine["milk"] = coffeMachine["milk"]?.plus(input2)!!
+
+            println("Write how many grams of coffee beans do you want to add:")
+            val input3 = scanner.nextInt()
+            coffeMachine["beans"] = coffeMachine["beans"]?.plus(input3)!!
+
+            println("Write how many disposable cups of coffee do you want to add:")
+            val input4 = scanner.nextInt()
+            coffeMachine["availableCups"] = coffeMachine["availableCups"]?.plus(input4)!!
+
+
+            coffeeMachineHas()
+
+            return
+        }
+        if (input == "take") {
+
+            if (coffeMachine["money"] != 0) {
+                println("I gave you $${coffeMachine["money"]}")
+                coffeMachine["money"] = coffeMachine["money"]?.let { coffeMachine["money"]?.minus(it) }!!
+
+                coffeeMachineHas()
+
+                return
+            }
+            println("not sufficient funds")
+            return
+
+        } else {
+            print("Wrong input ")
+            return
+
+        }
+
+
+    }
+
+    //fun makeCoffe(input: Int) {
+    //    val water = 200 * input
+    //    val milk = 50 * input
+    //    val coffe = 15 * input
+    //
+    //    println("For $input cups of coffee you will need:\n" +
+    //            "$water ml of water\n" +
+    //            "$milk ml of milk\n" +
+    //            "$coffe g of coffee beans")
+    //
+    //}
+
+
+    //fun disposableCup(water: Int?, milk: Int?, beans: Int?) : Int? {
+    //    val cups = mutableListOf<Int>()
+    //
+    //    if (water!=null ){
+    //        cups.add(water/200)
+    //    }
+    //    if (milk != null) {
+    //        cups.add(milk/50)
+    //    }
+    //    if (beans != null ) {
+    //        cups.add(beans/15)
+    //    }
+    //
+    //    return cups.min()
+    //
+    //}
+
+
+    fun makeOneCup(water: Int, milk: Int, beans: Int, count: Int) {
+        val staff = mutableListOf<Int>()
+        var min: Int = 0
+        if (count >= 1 || count == 0 && water >= 200 || water == 0 && milk >= 50 || milk == 0 && beans >= 15 || beans == 0) {
+            val waterR = water / 200
+            val milkR = milk / 50
+            val beansR = beans / 15
+            staff.add(0, waterR)
+            staff.add(1, milkR)
+            staff.add(2, beansR)
+            min = staff.min()!!
+            if (min != null) {
+                if (min > count) {
+                    println("Yes, I can make that amount of coffee (and even ${min - count}  more than that)")
+
+                }
+            }
+            if (min != null) {
+                if (min < count) {
+                    println("No, I can make only $min cups of coffee")
+                }
+            }
+
+        }
+
+        if (count == 1 && water == 0 || milk == 0 || beans == 0)
+            println("No, I can make only $min cups of coffee")
+        else
+            println("Yes, I can make that amount of coffee ")
+    }
+
+
+    interface Coffe {
+        val water: Int?
+        val milk: Int?
+        val beans: Int?
+        val cost: Int
+
+    }
+
+    class Espresso() : Coffe {
+        override val water: Int = 250
+        override val milk: Int = 0
+        override val beans: Int = 16
+        override val cost: Int = 4
+
+    }
+
+    class Latte() : Coffe {
+        override val water: Int = 350
+        override val milk: Int = 75
+        override val beans: Int = 20
+        override val cost: Int = 7
+
+    }
+
+    class Cappuccino() : Coffe {
+        override val water: Int = 200
+        override val milk: Int = 100
+        override val beans: Int = 12
+        override val cost: Int = 6
+
+
+    }
+
+
+
+  learner_created: false
+- name: test/CoffeeMachineTest.java
+  visible: false
+  text: |
+    import org.hyperskill.hstest.stage.StageTest;
+    import org.hyperskill.hstest.testcase.CheckResult;
+    import org.hyperskill.hstest.testcase.TestCase;
+    import machine.MainKt;
+
+    import java.util.ArrayList;
+    import java.util.Arrays;
+    import java.util.List;
+
+
+    class TestClue {
+        int water;
+        int milk;
+        int beans;
+        int cups;
+        int money;
+        String feedback;
+        TestClue(int w, int m, int b, int c, int mo, String feedback) {
+            water = w;
+            milk = m;
+            beans = b;
+            cups = c;
+            money = mo;
+            this.feedback = feedback;
+        }
+    }
+
+    public class CoffeeMachineTest extends StageTest<TestClue> {
+
+        public CoffeeMachineTest() {
+            super(MainKt.class);
+        }
+
+        @Override
+        public List<TestCase<TestClue>> generate() {
+            return Arrays.asList(
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(
+                    700 - 400,
+                    390 - 540,
+                    80 - 120 ,
+                    7 - 9,
+                    0 - 550,
+                        "This test is exactly " +
+                            "like in the example - try to run it by yourself"))
+                    .setInput(
+                        "remaining\n" +
+                        "buy\n" +
+                        "2\n" +
+                        "buy\n" +
+                        "2\n" +
+                        "fill\n" +
+                        "1000\n" +
+                        "0\n" +
+                        "0\n" +
+                        "0\n" +
+                        "buy\n" +
+                        "2\n" +
+                        "take\n" +
+                        "remaining\n" +
+                        "exit\n"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(
+                    3000,
+                    3000,
+                    3000 ,
+                    3000,
+                    0,
+                        "This test checks \"fill\" action"))
+                    .setInput(
+                        "remaining\n" +
+                        "fill\n" +
+                        "3000\n" +
+                        "3000\n" +
+                        "3000\n" +
+                        "3000\n" +
+                        "remaining\n" +
+                        "exit\n"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(
+                    -250,
+                    0,
+                    -16 ,
+                    -1,
+                    4, "This test checks \"buy\" " +
+                        "action with the first variant of coffee"))
+                    .setInput(
+                        "remaining\n" +
+                        "buy\n" +
+                        "1\n" +
+                        "remaining\n" +
+                        "exit\n"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(
+                    -350,
+                    -75,
+                    -20 ,
+                    -1,
+                    7, "This test checks \"buy\" " +
+                        "action with the second variant of coffee"))
+                    .setInput(
+                        "remaining\n" +
+                        "buy\n" +
+                        "2\n" +
+                        "remaining\n" +
+                        "exit\n"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(
+                    -200,
+                    -100,
+                    -12 ,
+                    -1,
+                    6, "This test checks \"buy\" " +
+                        "action with the third variant of coffee"))
+                    .setInput(
+                        "remaining\n" +
+                        "buy\n" +
+                        "3\n" +
+                        "remaining\n" +
+                        "exit\n"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(
+                    0,
+                    0,
+                    0 ,
+                    0,
+                    -550, "This test checks \"take\" action"))
+                    .setInput(
+                        "remaining\n" +
+                        "take\n" +
+                        "remaining\n" +
+                        "exit\n"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(
+                    0,
+                    0,
+                    0 ,
+                    0,
+                    0, "This test checks \"back\" " +
+                        "action right after \"buy\" action"))
+                    .setInput(
+                        "remaining\n" +
+                        "buy\n" +
+                        "back\n" +
+                        "remaining\n" +
+                        "exit\n")
+            );
+        }
+
+        @Override
+        public CheckResult check(String reply, TestClue clue) {
+            String[] lines = reply.split("\\n");
+
+            if (lines.length <= 1) {
+                return CheckResult.wrong("");
+            }
+
+            int water_ = clue.water;
+            int milk_ = clue.milk;
+            int beans_ = clue.beans;
+            int cups_ = clue.cups;
+            int money_ = clue.money;
+
+            List<Integer> milk = new ArrayList<>();
+            List<Integer> water = new ArrayList<>();
+            List<Integer> beans = new ArrayList<>();
+            List<Integer> cups = new ArrayList<>();
+            List<Integer> money = new ArrayList<>();
+
+            for (String line : lines) {
+                line = line.replace("$", "").trim();
+                String[] words = line.split("\\s+");
+                if (words.length == 0) {
+                    continue;
+                }
+                String firstWord = words[0];
+                int amount;
+                try {
+                    amount = Integer.parseInt(firstWord);
+                }
+                catch (Exception e) {
+                    continue;
+                }
+                if (line.contains("milk")) {
+                    milk.add(amount);
+                }
+                else if (line.contains("water")) {
+                    water.add(amount);
+                }
+                else if (line.contains("beans")) {
+                    beans.add(amount);
+                }
+                else if (line.contains("cups")) {
+                    cups.add(amount);
+                }
+                else if (line.contains("money")) {
+                    money.add(amount);
+                }
+            }
+
+            if (milk.size() != 2) {
+                return new CheckResult(false,
+                    "There should be two lines with \"milk\", " +
+                        "found: " + milk.size());
+            }
+
+            if (water.size() != 2) {
+                return new CheckResult(false,
+                    "There should be two lines with \"water\", " +
+                        "found: " + water.size());
+            }
+
+            if (beans.size() != 2) {
+                return new CheckResult(false,
+                    "There should be two lines with \"beans\", " +
+                        "found: " + beans.size());
+            }
+
+            if (cups.size() != 2) {
+                return new CheckResult(false,
+                    "There should be two lines with \"cups\", " +
+                        "found: " + cups.size());
+            }
+
+            if (money.size() != 2) {
+                return new CheckResult(false,
+                    "There should be two lines with \"money\", " +
+                        "found: " + money.size());
+            }
+
+            int milk0 = milk.get(0);
+            int milk1 = milk.get(milk.size() - 1);
+
+            int water0 = water.get(0);
+            int water1 = water.get(water.size() - 1);
+
+            int beans0 = beans.get(0);
+            int beans1 = beans.get(beans.size() - 1);
+
+            int cups0 = cups.get(0);
+            int cups1 = cups.get(cups.size() - 1);
+
+            int money0 = money.get(0);
+            int money1 = money.get(money.size() - 1);
+
+            int diffWater = water1 - water0;
+            int diffMilk = milk1 - milk0;
+            int diffBeans = beans1 - beans0;
+            int diffCups = cups1 - cups0;
+            int diffMoney = money1 - money0;
+
+            boolean isCorrect =
+                diffWater == water_ &&
+                diffMilk == milk_ &&
+                diffBeans == beans_ &&
+                diffCups == cups_ &&
+                diffMoney == money_;
+
+            return new CheckResult(isCorrect, clue.feedback);
+        }
+    }
+  learner_created: false
+feedback_link: https://hyperskill.org/projects/67/stages/364/implement
+status: Solved
+feedback:
+  message: Congratulations! Continue on <a href="https://hyperskill.org/projects/67/stages/364/implement">JetBrains
+    Academy</a>
+  time: Sat, 08 Aug 2020 16:38:43 UTC
+record: 5
